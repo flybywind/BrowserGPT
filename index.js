@@ -67,6 +67,8 @@ async function main(options) {
   }
 
   const chatApi = new ChatOpenAI({
+    // 模型的输出会更加确定和保守，倾向于选择概率最高的词。
+    // 这种设置适合需要精确和一致性的任务，比如填空或问答。
     temperature: 0.1,
     model: options.model ? options.model : 'qwen-max',
     configuration: {
@@ -118,9 +120,9 @@ const program = new Command();
 
 program
   .option('-a, --autogpt', 'run with autogpt', false)
-  .option('-m, --model <model>', 'openai model to use', 'gpt-4-1106-preview')
+  .option('-m, --model <model>', 'openai model to use', 'qwen-plus')
   .option('-o, --outputFilePath <outputFilePath>', 'path to store test code')
-  .option('-u, --url <url>', 'url to start on', 'https://www.google.com')
+  .option('-u, --url <url>', 'url to start on', 'https://www.baidu.com')
   .option('-v, --viewport <viewport>', 'viewport size to use', '1280,720')
   .option('-h, --headless', 'run in headless mode', false);
 

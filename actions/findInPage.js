@@ -1,6 +1,6 @@
 import {parseSite} from '../util/index.js';
 import {retry} from '@lifeomic/attempt';
-import {HumanMessage, SystemMessage} from 'langchain/schema';
+import {HumanMessage, SystemMessage} from '@langchain/core/messages';
 
 export async function findInPage(page, chatApi, task) {
   const systemPrompt = `
