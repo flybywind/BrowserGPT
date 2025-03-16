@@ -1,29 +1,17 @@
-import {parseSite} from '../util/index.js';
-import {retry} from '@lifeomic/attempt';
-import {HumanMessage, SystemMessage} from '@langchain/core/messages';
+import {parseSite} from './pageParser';
+export async function findTextInPage(page, query) {
+  const pageHtml = await parseSite(page);
+  // find query string in pageHtml and return the surrounding text about 1000 characters
+  const index = pageHtml.indexOf(query);
+  if (index === -1) {
+    return null;
+  }
+  return pageHtml.slice(index - 500, index + 500);
+}
 
-export async function findInPage(page, chatApi, task) {
-  const systemPrompt = `
-You are a programmer and your job is to pick out information in code to a pm. You are working on an html file. You will extract the necessary content asked from the information provided. 
-
-Context:
-Your computer is a mac. Cmd is the meta key, META.
-The browser is already open. 
-Current page url is ${await page.evaluate('location.href')}.
-Current page title is ${await page.evaluate('document.title')}.
-
-Here is the overview of the site. Format is in html:
-\`\`\`
-${await parseSite(page)}
-\`\`\`
-
-`;
-
-  const completion = await retry(async () =>
-    chatApi.call([new SystemMessage(systemPrompt), new HumanMessage(task)])
-  );
-  console.log('Found on page'.green);
-  console.log(completion.text);
-  console.log('EOF'.green);
-  return completion.text;
+export async function findElementInPage(page, element) {
+  // page is the html instance of playwrite returned, element is
+  // one valid html tag name, query all elements with this tag name
+  const elements = page.locator(element);
+  return elements.all();
 }

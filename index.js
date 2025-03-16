@@ -6,7 +6,6 @@ import colors from '@colors/colors';
 import {Command} from 'commander';
 
 import {ChatOpenAI} from '@langchain/openai';
-import {doActionWithAutoGPT} from './autogpt/index.js';
 import {interactWithPage} from './actions/index.js';
 import {createTestFile, gracefulExit, logPageScreenshot} from './util/index.js';
 
@@ -100,11 +99,7 @@ async function main(options) {
       console.log('Please input a task or press CTRL+C to exit'.red);
     } else {
       try {
-        if (options.autogpt) {
-          await doActionWithAutoGPT(page, chatApi, task, options);
-        } else {
-          await interactWithPage(chatApi, page, task, options);
-        }
+        await interactWithPage(chatApi, page, task, options);
         if (options.headless) {
           await logPageScreenshot(page);
         }
@@ -119,7 +114,6 @@ async function main(options) {
 const program = new Command();
 
 program
-  .option('-a, --autogpt', 'run with autogpt', false)
   .option('-m, --model <model>', 'openai model to use', 'qwen-plus')
   .option('-o, --outputFilePath <outputFilePath>', 'path to store test code')
   .option('-u, --url <url>', 'url to start on', 'https://www.baidu.com')

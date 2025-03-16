@@ -151,5 +151,6 @@ function parseFrame(html) {
 export async function parseSite(page) {
   let mainFrame = page.mainFrame();
   const structure = await getStructure(mainFrame);
+  console.log(`page structure length: ${structure.innerHTML.length}`);
   return structure.innerHTML;
 }
