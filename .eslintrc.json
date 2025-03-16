@@ -1,4 +1,7 @@
 {
+  "rules": {
+    "import/named": "off"
+  },
   "extends": [
     "plugin:import/recommended",
     "plugin:import/warnings",

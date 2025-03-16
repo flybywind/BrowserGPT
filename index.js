@@ -5,7 +5,7 @@ import prompt from 'prompt';
 import colors from '@colors/colors';
 import {Command} from 'commander';
 
-import {ChatOpenAI} from 'langchain/chat_models/openai';
+import {ChatOpenAI} from '@langchain/openai';
 import {doActionWithAutoGPT} from './autogpt/index.js';
 import {interactWithPage} from './actions/index.js';
 import {createTestFile, gracefulExit, logPageScreenshot} from './util/index.js';
@@ -40,10 +40,39 @@ async function main(options) {
   prompt.delimiter = '>'.green;
 
   prompt.start();
+  // 检查必要的环境变量
+  if (!process.env.OPENAI_API_BASE_URL) {
+    console.log(
+      '请设置 OPENAI_API_BASE_URL 环境变量,例如: https://api.openai.com/v1 或 https://dashscope.aliyuncs.com/api/v1'
+        .red
+    );
+    process.exit(1);
+  }
+
+  if (!process.env.OPENAI_API_KEY) {
+    console.log('请设置 OPENAI_API_KEY 环境变量'.red);
+    process.exit(1);
+  }
+
+  // 配置自定义API基础URL
+  const apiBaseUrl = process.env.OPENAI_API_BASE_URL;
+  const apiKey = process.env.OPENAI_API_KEY;
+
+  // 验证URL格式
+  try {
+    new URL(apiBaseUrl);
+  } catch (e) {
+    console.log('OPENAI_API_BASE_URL 格式无效,请输入有效的URL'.red);
+    process.exit(1);
+  }
 
   const chatApi = new ChatOpenAI({
     temperature: 0.1,
-    modelName: options.model ? options.model : 'gpt-4-1106-preview',
+    model: options.model ? options.model : 'qwen-max',
+    configuration: {
+      apiKey: apiKey,
+      baseURL: apiBaseUrl,
+    },
   });
 
   if (options.outputFilePath) {
